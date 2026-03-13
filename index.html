@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Souradeep Paul — SDET Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #F5C518;
+  --dark: #111111;
+  --mid: #1c1c1c;
+  --card: #181818;
+  --grey: #2a2a2a;
+  --accent: #FF6B35;
+  --text: #e8e4df;
+  --muted: #888;
+  --border: rgba(245,197,24,0.2);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+#progressBar {
+  position: fixed; top: 0; left: 0;
+  height: 3px; width: 0;
+  background: var(--yellow);
+  z-index: 9999;
+  transition: width 0.1s linear;
+}
+@media (pointer: fine) {
+  body { cursor: none; }
+  #cur {
+    position: fixed; width: 10px; height: 10px;
+    background: var(--yellow); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: width .2s, height .2s;
+    mix-blend-mode: difference;
+  }
+  #ring {
+    position: fixed; width: 32px; height: 32px;
+    border: 1.5px solid rgba(245,197,24,0.5); border-radius: 50%;
+    pointer-events: none; z-index: 9997;
+    transform: translate(-50%,-50%);
+    transition: all .12s ease;
+  }
+}
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 48px;
+  background: rgba(17,17,17,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  z-index: 1000;
+}
+.logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -.5px; }
+.logo span { color: var(--yellow); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px;
+  text-decoration: none; color: var(--muted); text-transform: uppercase; transition: color .25s;
+}
+.nav-links a:hover { color: var(--yellow); }
+.nav-cta {
+  font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; font-weight: 700;
+  text-transform: uppercase; text-decoration: none;
+  background: var(--yellow); color: var(--dark); padding: 10px 22px;
+  transition: background .25s, transform .25s; display: inline-block;
+}
+.nav-cta:hover { background: var(--accent); color: #fff; transform: translateY(-2px); }
+.hbg {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+}
+.hbg span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
+.hbg.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+.hbg.open span:nth-child(2) { opacity: 0; }
+.hbg.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+.mmenu {
+  display: none; position: fixed; inset: 0;
+  background: rgba(17,17,17,0.98); backdrop-filter: blur(20px);
+  z-index: 1050; flex-direction: column;
+  align-items: center; justify-content: center; gap: 36px;
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.mmenu.open { opacity: 1; pointer-events: all; }
+.mmenu a { font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800; letter-spacing: -1.5px; color: var(--text); text-decoration: none; transition: color .2s; }
+.mmenu a:hover { color: var(--yellow); }
+.mmenu .mcta { font-family: 'Space Mono', monospace !important; font-size: 13px !important; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; background: var(--yellow); color: var(--dark) !important; padding: 14px 36px; }
+.hero {
+  min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; gap: 60px; padding: 120px 48px 80px; position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; font-family: 'Syne', sans-serif;
+  font-size: clamp(100px,16vw,220px); font-weight: 800; letter-spacing: -8px;
+  color: rgba(245,197,24,0.035); top: 50%; left: 50%; transform: translate(-50%,-50%);
+  white-space: nowrap; pointer-events: none; user-select: none;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 3px;
+  color: var(--yellow); text-transform: uppercase; margin-bottom: 22px;
+}
+.chip::before { content:''; display:block; width:28px; height:1.5px; background:var(--yellow); }
+h1 {
+  font-family: 'Syne', sans-serif; font-size: clamp(52px,6.5vw,90px);
+  font-weight: 800; line-height: 0.92; letter-spacing: -3px; margin-bottom: 14px;
+}
+h1 .hy { color: var(--yellow); }
+h1 .ho { -webkit-text-stroke: 2px var(--text); color: transparent; }
+.role { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 26px; }
+.desc { font-size: 15px; line-height: 1.75; color: rgba(232,228,223,0.65); max-width: 460px; margin-bottom: 38px; }
+.btns { display: flex; gap: 14px; flex-wrap: wrap; }
+.by { background: var(--yellow); color: var(--dark); font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; padding: 14px 28px; display: inline-flex; align-items: center; gap: 8px; transition: all .3s; }
+.by:hover { background: var(--accent); color: #fff; transform: translateY(-3px); }
+.bo { border: 1.5px solid rgba(245,197,24,0.35); color: var(--yellow); font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; padding: 14px 28px; display: inline-flex; align-items: center; gap: 8px; background: transparent; transition: all .3s; }
+.bo:hover { background: var(--yellow); color: var(--dark); transform: translateY(-3px); }
+.hright { position: relative; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.pframe { position: relative; width: 340px; height: 420px; }
+.pbg { position: absolute; bottom: -14px; right: -14px; width: 100%; height: 100%; background: var(--yellow); opacity: 0.12; clip-path: polygon(0 0,100% 0,100% 84%,84% 100%,0 100%); }
+.pinner { position: relative; z-index: 2; width: 100%; height: 100%; background: var(--grey); clip-path: polygon(0 0,100% 0,100% 84%,84% 100%,0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+.pinner .av { font-size: 72px; }
+.pinner p { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; text-align: center; }
+.sfloat { position: absolute; z-index: 10; background: var(--card); border: 1px solid var(--border); padding: 12px 18px; }
+.sfloat.tl { top: 20px; left: -54px; }
+.sfloat.br { bottom: 56px; right: -48px; }
+.snum { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--yellow); line-height: 1; }
+.slbl { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-top: 3px; }
+.hmeta { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+.hmeta span { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; }
+section { padding: 96px 48px; }
+.stag { display: inline-flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 3px; color: var(--yellow); text-transform: uppercase; margin-bottom: 16px; }
+.stag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--yellow); animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+h2 { font-family: 'Syne', sans-serif; font-size: clamp(34px,4vw,58px); font-weight: 800; letter-spacing: -2px; line-height: 1; margin-bottom: 10px; }
+h2 .hl { color: var(--yellow); }
+.ssub { font-size: 15px; color: var(--muted); line-height: 1.65; max-width: 480px; margin-top: 8px; }
+.fgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 48px; }
+.fc { background: var(--card); border: 1px solid rgba(255,255,255,0.05); padding: 0 0 28px 0; cursor: pointer; position: relative; overflow: hidden; transition: transform .35s, border-color .35s, box-shadow .35s; }
+.fc:hover { transform: translateY(-7px); border-color: rgba(245,197,24,0.32); box-shadow: 0 20px 56px rgba(0,0,0,0.45); }
+.fthumb { width: 100%; height: 150px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 22px; }
+.tg { position: absolute; inset: 0; background-image: linear-gradient(rgba(245,197,24,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(245,197,24,0.07) 1px, transparent 1px); background-size: 22px 22px; }
+.tgl { position: absolute; width: 70px; height: 70px; border-radius: 50%; filter: blur(22px); opacity: 0.45; }
+.tic { font-size: 48px; position: relative; z-index: 2; animation: flt 3s ease-in-out infinite; }
+@keyframes flt { 0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)} }
+.fnum { position: absolute; top: 12px; right: 16px; font-family: 'Syne', sans-serif; font-size: 56px; font-weight: 800; color: rgba(245,197,24,0.07); line-height: 1; pointer-events: none; }
+.fbody { padding: 0 24px; }
+.fico { width: 40px; height: 40px; background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px; transition: background .3s; }
+.fc:hover .fico { background: var(--yellow); }
+.ftit { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.3px; }
+.fdesc { font-size: 13px; line-height: 1.65; color: rgba(232,228,223,0.5); }
+.ftags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.ftag { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; background: rgba(245,197,24,0.07); border: 1px solid rgba(245,197,24,0.18); color: var(--yellow); padding: 4px 9px; }
+.farr { position: absolute; bottom: 20px; right: 20px; width: 28px; height: 28px; border: 1px solid rgba(245,197,24,0.2); display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--yellow); opacity: 0; transition: opacity .3s, transform .3s; }
+.fc:hover .farr { opacity: 1; transform: translate(2px,-2px); }
+.expbg { background: var(--mid); }
+.tl { margin-top: 48px; position: relative; }
+.tl::before { content:''; position:absolute; left:0; top:0; bottom:0; width:1px; background:linear-gradient(to bottom, var(--yellow), transparent); }
+.ei { padding-left: 48px; padding-bottom: 48px; position: relative; }
+.ei:last-child { padding-bottom: 0; }
+.edot { position: absolute; left: -7px; top: 8px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--yellow); background: var(--dark); transition: background .3s, box-shadow .3s; }
+.ei:hover .edot { background: var(--yellow); box-shadow: 0 0 18px rgba(245,197,24,.5); }
+.ehead { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+.erole { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -.4px; }
+.ecomp { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--yellow); letter-spacing: 1px; margin-top: 4px; }
+.eper { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; background: rgba(245,197,24,0.06); border: 1px solid var(--border); padding: 6px 12px; white-space: nowrap; height: fit-content; }
+.ebl { list-style: none; margin-top: 14px; display: flex; flex-direction: column; gap: 9px; }
+.ebl li { display: flex; gap: 10px; font-size: 14px; line-height: 1.6; color: rgba(232,228,223,.58); transition: color .3s; }
+.ei:hover .ebl li { color: rgba(232,228,223,.82); }
+.ebl li::before { content:'▸'; color:var(--yellow); font-size:12px; margin-top:3px; flex-shrink:0; }
+.sgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 48px; }
+.sg { background: var(--card); border: 1px solid rgba(255,255,255,0.05); padding: 26px; transition: border-color .3s, transform .3s; }
+.sg:hover { border-color: rgba(245,197,24,0.2); transform: translateY(-4px); }
+.sgico { font-size: 26px; margin-bottom: 12px; }
+.sgtit { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 14px; letter-spacing: -.3px; }
+.spills { display: flex; flex-wrap: wrap; gap: 7px; }
+.sp { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: rgba(232,228,223,.7); padding: 6px 11px; transition: all .25s; }
+.sp:hover { background: rgba(245,197,24,0.1); border-color: rgba(245,197,24,.3); color: var(--yellow); }
+.yband { background: var(--yellow); padding: 56px 48px; display: flex; align-items: center; gap: 52px; justify-content: space-between; flex-wrap: wrap; }
+.ylbl { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 3px; color: rgba(17,17,17,.55); text-transform: uppercase; margin-bottom: 10px; }
+.ytit { font-family: 'Syne', sans-serif; font-size: 34px; font-weight: 800; color: var(--dark); letter-spacing: -1.5px; line-height: 1.05; }
+.ytools { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 20px; }
+.ytool { background: rgba(17,17,17,0.1); border: 1.5px solid rgba(17,17,17,.15); color: var(--dark); font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1.5px; font-weight: 700; padding: 8px 15px; display: flex; align-items: center; gap: 6px; }
+.ystats { display: flex; gap: 28px; }
+.ysnum { font-family: 'Syne', sans-serif; font-size: 44px; font-weight: 800; color: var(--dark); line-height: 1; }
+.yslbl { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: rgba(17,17,17,.55); text-transform: uppercase; margin-top: 5px; }
+.ecard { background: var(--card); border: 1px solid rgba(255,255,255,0.05); padding: 38px; display: flex; gap: 32px; align-items: flex-start; margin-top: 48px; position: relative; overflow: hidden; transition: border-color .3s, transform .3s; }
+.ecard::after { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--yellow); }
+.ecard:hover { border-color: rgba(245,197,24,.22); transform: translateX(6px); }
+.eico { width: 60px; height: 60px; flex-shrink: 0; background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.2); display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.edeg { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -.4px; margin-bottom: 5px; }
+.escola { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--yellow); letter-spacing: 1px; margin-bottom: 7px; }
+.edesc { font-size: 13px; line-height: 1.65; color: rgba(232,228,223,.5); }
+.ecgpa { display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; background: rgba(245,197,24,0.07); border: 1px solid var(--border); padding: 6px 12px; }
+.csec { background: var(--mid); text-align: center; position: relative; overflow: hidden; }
+.csec::before { content:'CONNECT'; position:absolute; font-family:'Syne',sans-serif; font-size:clamp(70px,12vw,170px); font-weight:800; color:rgba(245,197,24,0.03); top:50%; left:50%; transform:translate(-50%,-50%); white-space:nowrap; pointer-events:none; }
+.clinks { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 44px; }
+.cl { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid rgba(255,255,255,0.05); padding: 16px 26px; text-decoration: none; color: var(--text); font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; transition: all .3s; }
+.cl:hover { border-color: var(--yellow); color: var(--yellow); transform: translateY(-4px); box-shadow: 0 14px 36px rgba(0,0,0,.3); }
+.cli { font-size: 17px; }
+.mover { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); z-index: 5000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.mover.open { opacity: 1; pointer-events: all; }
+.mbox { background: var(--card); border: 1px solid rgba(245,197,24,0.22); max-width: 620px; width: 92vw; max-height: 82vh; overflow-y: auto; padding: 44px; position: relative; transform: translateY(18px); transition: transform .3s; }
+.mover.open .mbox { transform: translateY(0); }
+.mx { position: absolute; top: 18px; right: 18px; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); width: 34px; height: 34px; font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .25s; }
+.mx:hover { border-color: var(--yellow); color: var(--yellow); }
+.micon { font-size: 38px; margin-bottom: 14px; }
+.mtit { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+.msub { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--yellow); text-transform: uppercase; margin-bottom: 22px; }
+.mbod { font-size: 14px; line-height: 1.75; color: rgba(232,228,223,.68); }
+.mtags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px; }
+footer { padding: 28px 48px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+footer p { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+.rv { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+.rv.in { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 1024px) {
+  .fgrid { grid-template-columns: repeat(2,1fr); }
+  .sgrid { grid-template-columns: repeat(2,1fr); }
+  .hero { gap: 36px; padding: 110px 36px 70px; }
+}
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links, .nav-cta { display: none; }
+  .hbg { display: flex; }
+  .mmenu { display: flex; }
+  .hero { grid-template-columns: 1fr; padding: 88px 20px 56px; min-height: auto; gap: 0; }
+  .hero-bg { font-size: 80px; }
+  .hright { display: none; }
+  h1 { font-size: clamp(46px,13vw,70px); letter-spacing: -2px; }
+  .role { font-size: 10px; }
+  .desc { font-size: 14px; }
+  .btns { flex-direction: column; }
+  .by, .bo { width: 100%; justify-content: center; }
+  section { padding: 56px 20px; }
+  h2 { font-size: clamp(28px,8vw,42px); letter-spacing: -1px; }
+  .fgrid { grid-template-columns: 1fr; gap: 14px; margin-top: 32px; }
+  .fthumb { height: 130px; }
+  .tl { margin-top: 32px; }
+  .ei { padding-left: 30px; padding-bottom: 36px; }
+  .erole { font-size: 17px; }
+  .ehead { flex-direction: column; gap: 8px; }
+  .eper { white-space: normal; }
+  .sgrid { grid-template-columns: 1fr; gap: 12px; margin-top: 32px; }
+  .yband { flex-direction: column; padding: 40px 20px; gap: 24px; text-align: center; }
+  .ytools { justify-content: center; }
+  .ystats { justify-content: center; }
+  .ytit { font-size: 26px; }
+  .ecard { flex-direction: column; gap: 18px; padding: 26px 20px; margin-top: 32px; }
+  .clinks { flex-direction: column; gap: 10px; align-items: center; margin-top: 32px; }
+  .cl { width: 100%; max-width: 340px; justify-content: center; }
+  .mbox { padding: 26px 18px; width: 96vw; }
+  .mtit { font-size: 21px; }
+  footer { flex-direction: column; text-align: center; padding: 22px 20px; gap: 6px; }
+}
+@media (max-width: 400px) {
+  h1 { font-size: 40px; }
+  section { padding: 44px 16px; }
+  .fbody { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+<div id="progressBar"></div>
+<div id="cur"></div>
+<div id="ring"></div>
+
+<div class="mmenu" id="mmenu">
+  <a href="#focus" onclick="mmClose()">Focus</a>
+  <a href="#experience" onclick="mmClose()">Experience</a>
+  <a href="#skills" onclick="mmClose()">Skills</a>
+  <a href="#contact" onclick="mmClose()">Contact</a>
+  <a href="mailto:souradeepp3@gmail.com" class="mcta" onclick="mmClose()">⚡ Hire Me</a>
+</div>
+
+<nav>
+  <div class="logo">S<span>.</span>PAUL</div>
+  <ul class="nav-links">
+    <li><a href="#focus">Focus</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="mailto:souradeepp3@gmail.com">⚡ Hire Me</a>
+  <button class="hbg" id="hbg" onclick="mmToggle()" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-bg">SDET</div>
+  <div>
+    <div class="chip">Available for opportunities</div>
+    <h1>SOURA<br><span class="hy">DEEP</span><br><span class="ho">PAUL</span></h1>
+    <div class="role">Software Development Engineer in Test</div>
+    <p class="desc">Nearly 5 years crafting bulletproof automation frameworks across healthcare and enterprise domains. AI-powered testing. CI/CD integration. Inclusive design advocate.</p>
+    <div class="btns">
+      <a class="by" href="#focus">↓ Explore Work</a>
+      <a class="bo" href="#contact">Get In Touch →</a>
+    </div>
+  </div>
+  <div class="hright">
+    <div class="pframe">
+      <div class="pbg"></div>
+      <div class="pinner">
+        <div class="av">👨‍💻</div>
+        <p>SDET &amp; Automation<br>Engineer</p>
+      </div>
+      <div class="sfloat tl">
+        <div class="snum">5<span style="font-size:15px;color:var(--muted)">yr</span></div>
+        <div class="slbl">Experience</div>
+      </div>
+      <div class="sfloat br">
+        <div class="snum">40<span style="font-size:14px;color:var(--muted)">%</span></div>
+        <div class="slbl">Effort Saved</div>
+      </div>
+    </div>
+    <div class="hmeta">
+      <span>📍 Bengaluru, India</span>
+      <span>🎓 B.Tech CSE · 8.51 CGPA</span>
+    </div>
+  </div>
+</section>
+
+<section id="focus">
+  <div class="rv">
+    <div class="stag"><span class="dot"></span>Areas of Expertise</div>
+    <h2>Focus <span class="hl">Areas.</span></h2>
+    <p class="ssub">Click any card to explore in depth — each represents a domain where I architect quality at scale.</p>
+  </div>
+  <div class="fgrid">
+    <div class="fc rv" onclick="openM('selenium')">
+      <div class="fnum">01</div>
+      <div class="fthumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)">
+        <div class="tg"></div><div class="tgl" style="background:#4a90d9"></div>
+        <div class="tic">🧪</div>
+      </div>
+      <div class="fbody">
+        <div class="fico">🔬</div>
+        <div class="ftit">Test Automation Engineering</div>
+        <div class="fdesc">Scalable frameworks using Selenium, Cucumber BDD, and TestNG with Page Object Model.</div>
+        <div class="ftags"><span class="ftag">Selenium</span><span class="ftag">Cucumber</span><span class="ftag">TestNG</span><span class="ftag">POM</span></div>
+      </div>
+      <div class="farr">↗</div>
+    </div>
+    <div class="fc rv" onclick="openM('ai')">
+      <div class="fnum">02</div>
+      <div class="fthumb" style="background:linear-gradient(135deg,#0d1117,#1a1f2e,#0d2137)">
+        <div class="tg"></div><div class="tgl" style="background:#7c3aed"></div>
+        <div class="tic">🤖</div>
+      </div>
+      <div class="fbody">
+        <div class="fico">⚡</div>
+        <div class="ftit">AI-Powered Automation</div>
+        <div class="fdesc">GenAI to auto-generate test data and Groovy test cases, transforming regression coverage.</div>
+        <div class="ftags"><span class="ftag">GenAI</span><span class="ftag">Groovy</span><span class="ftag">Auto-Gen</span></div>
+      </div>
+      <div class="farr">↗</div>
+    </div>
+    <div class="fc rv" onclick="openM('cicd')">
+      <div class="fnum">03</div>
+      <div class="fthumb" style="background:linear-gradient(135deg,#1a0a00,#2d1500,#3d2200)">
+        <div class="tg"></div><div class="tgl" style="background:#f5a623"></div>
+        <div class="tic">⚙️</div>
+      </div>
+      <div class="fbody">
+        <div class="fico">🔧</div>
+        <div class="ftit">CI/CD Integration</div>
+        <div class="fdesc">Seamless automation with Jenkins pipelines for rapid feedback and reliable release cycles.</div>
+        <div class="ftags"><span class="ftag">Jenkins</span><span class="ftag">CI/CD</span><span class="ftag">Git</span></div>
+      </div>
+      <div class="farr">↗</div>
+    </div>
+    <div class="fc rv" onclick="openM('access')">
+      <div class="fnum">04</div>
+      <div class="fthumb" style="background:linear-gradient(135deg,#0a1a0a,#0f2d0f,#1a3d1a)">
+        <div class="tg"></div><div class="tgl" style="background:#34d399"></div>
+        <div class="tic">♿</div>
+      </div>
+      <div class="fbody">
+        <div class="fico">👁</div>
+        <div class="ftit">Accessibility Testing</div>
+        <div class="fdesc">WCAG 2.1 compliance using NVDA and WAVE — digital experiences for all users.</div>
+        <div class="ftags"><span class="ftag">WCAG 2.1</span><span class="ftag">NVDA</span><span class="ftag">WAVE</span></div>
+      </div>
+      <div class="farr">↗</div>
+    </div>
+    <div class="fc rv" onclick="openM('api')">
+      <div class="fnum">05</div>
+      <div class="fthumb" style="background:linear-gradient(135deg,#1a0a1a,#2d152d,#3d2247)">
+        <div class="tg"></div><div class="tgl" style="background:#f43f5e"></div>
+        <div class="tic">🔌</div>
+      </div>
+      <div class="fbody">
+        <div class="fico">📡</div>
+        <div class="ftit">API &amp; Healthcare</div>
+        <div class="fdesc">FHIR and HL7 compliance validation with expert Postman-based API testing.</div>
+        <div class="ftags"><span class="ftag">Postman</span><span class="ftag">FHIR</span><span class="ftag">HL7</span></div>
+      </div>
+      <div class="farr">↗</div>
+    </div>
+    <div class="fc rv" onclick="openM('agile')">
+      <div class="fnum">06</div>
+      <div class="fthumb" style="background:linear-gradient(135deg,#1a1a00,#2d2d00,#3d3d1a)">
+        <div class="tg"></div><div class="tgl" style="background:#fbbf24"></div>
+        <div class="tic">🏃</div>
+      </div>
+      <div class="fbody">
+        <div class="fico">📋</div>
+        <div class="ftit">Agile &amp; QA Leadership</div>
+        <div class="fdesc">Lead QA teams in Agile and SAFe. Mentor on automation and AI-based validation.</div>
+        <div class="ftags"><span class="ftag">Agile</span><span class="ftag">SAFe</span><span class="ftag">Mentoring</span></div>
+      </div>
+      <div class="farr">↗</div>
+    </div>
+  </div>
+</section>
+
+<section class="expbg" id="experience">
+  <div class="rv">
+    <div class="stag"><span class="dot"></span>Work History</div>
+    <h2>Experience <span class="hl">Timeline.</span></h2>
+  </div>
+  <div class="tl">
+    <div class="ei rv">
+      <div class="edot"></div>
+      <div class="ehead">
+        <div><div class="erole">Software Development Engineer in Test</div><div class="ecomp">⚡ Telus International · Bengaluru</div></div>
+        <div class="eper">Jul 2025 — Present</div>
+      </div>
+      <ul class="ebl">
+        <li>Spearheading automation with Selenium + Java + Jenkins, reducing manual effort by 40%.</li>
+        <li>Leading AI-driven automation to auto-generate test data and Groovy test cases.</li>
+        <li>Mentoring QA teams on automation best practices and AI-based validation strategies.</li>
+        <li>Conducting WCAG 2.1 accessibility validations using NVDA and WAVE.</li>
+      </ul>
+    </div>
+    <div class="ei rv">
+      <div class="edot"></div>
+      <div class="ehead">
+        <div><div class="erole">Test Automation Engineer</div><div class="ecomp">🏥 Oracle Cerner · Bengaluru</div></div>
+        <div class="eper">Feb 2025 — Jun 2025</div>
+      </div>
+      <ul class="ebl">
+        <li>Automated complex healthcare workflows ensuring FHIR and HL7 compliance.</li>
+        <li>Designed modular automation framework using Selenium WebDriver and Java.</li>
+        <li>Integrated automation suites with Jenkins CI/CD for continuous validation.</li>
+      </ul>
+    </div>
+    <div class="ei rv">
+      <div class="edot"></div>
+      <div class="ehead">
+        <div><div class="erole">Senior Software Engineer</div><div class="ecomp">💼 Wipro · Kolkata</div></div>
+        <div class="eper">Oct 2022 — Jan 2025</div>
+      </div>
+      <ul class="ebl">
+        <li>Developed end-to-end automation for VISA's banking applications using Selenium, Java, and TestNG.</li>
+        <li>Reduced regression cycles by 30% through improved automation coverage.</li>
+        <li>Implemented POM pattern across large-scale systems for better maintainability.</li>
+        <li>Conducted accessibility audits with WAVE and NVDA ensuring ADA compliance.</li>
+      </ul>
+    </div>
+    <div class="ei rv">
+      <div class="edot"></div>
+      <div class="ehead">
+        <div><div class="erole">Project Engineer</div><div class="ecomp">💼 Wipro · Kolkata</div></div>
+        <div class="eper">Sep 2020 — Sep 2022</div>
+      </div>
+      <ul class="ebl">
+        <li>Performed accessibility testing for web and mobile applications, remediating compliance issues.</li>
+        <li>Collaborated with UI developers to ensure ADA compliance across Angular and React components.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="rv">
+    <div class="stag"><span class="dot"></span>Technical Arsenal</div>
+    <h2>Skills <span class="hl">&amp; Tools.</span></h2>
+  </div>
+  <div class="sgrid">
+    <div class="sg rv"><div class="sgico">🧪</div><div class="sgtit">Automation</div><div class="spills"><span class="sp">Selenium</span><span class="sp">Cucumber</span><span class="sp">TestNG</span><span class="sp">BDD</span><span class="sp">POM</span><span class="sp">Playwright</span></div></div>
+    <div class="sg rv"><div class="sgico">💻</div><div class="sgtit">Languages</div><div class="spills"><span class="sp">Java</span><span class="sp">Python</span><span class="sp">JavaScript</span><span class="sp">Groovy</span></div></div>
+    <div class="sg rv"><div class="sgico">🔧</div><div class="sgtit">API &amp; CI/CD</div><div class="spills"><span class="sp">Postman</span><span class="sp">Jenkins</span><span class="sp">Git</span><span class="sp">GitHub</span></div></div>
+    <div class="sg rv"><div class="sgico">♿</div><div class="sgtit">Accessibility</div><div class="spills"><span class="sp">NVDA</span><span class="sp">WAVE</span><span class="sp">WCAG 2.1</span><span class="sp">ADA</span><span class="sp">Acc. Insights</span></div></div>
+    <div class="sg rv"><div class="sgico">☁️</div><div class="sgtit">Cloud</div><div class="spills"><span class="sp">AWS</span><span class="sp">Azure</span></div></div>
+    <div class="sg rv"><div class="sgico">📋</div><div class="sgtit">Methodologies</div><div class="spills"><span class="sp">Agile</span><span class="sp">DevSecOps</span><span class="sp">SAFe</span><span class="sp">SDLC</span><span class="sp">STLC</span></div></div>
+  </div>
+</section>
+
+<div class="yband rv">
+  <div>
+    <div class="ylbl">Inclusive Design Champion</div>
+    <div class="ytit">Building the Web<br>for Everyone.</div>
+    <div class="ytools">
+      <span class="ytool">♿ WCAG 2.1</span>
+      <span class="ytool">🔊 NVDA</span>
+      <span class="ytool">🌊 WAVE</span>
+      <span class="ytool">👁 Acc. Insights</span>
+    </div>
+  </div>
+  <div class="ystats">
+    <div><div class="ysnum">4+</div><div class="yslbl">Years in A11Y</div></div>
+    <div><div class="ysnum">WCAG</div><div class="yslbl">2.1 Certified</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="rv">
+    <div class="stag"><span class="dot"></span>Education</div>
+    <h2>Academic <span class="hl">Background.</span></h2>
+  </div>
+  <div class="ecard rv">
+    <div class="eico">🎓</div>
+    <div>
+      <div class="edeg">Bachelor of Technology in Computer Science &amp; Engineering</div>
+      <div class="escola">University of Engineering &amp; Management (UEM), Kolkata</div>
+      <div class="edesc">Strong foundation in computer science, algorithms, and software engineering principles that underpin robust quality engineering practice.</div>
+      <div class="ecgpa">⭐ CGPA: 8.51 / 10</div>
+    </div>
+  </div>
+</section>
+
+<section class="csec" id="contact">
+  <div class="rv">
+    <div class="stag" style="justify-content:center"><span class="dot"></span>Let's Build Together</div>
+    <h2 style="text-align:center">Get In <span class="hl">Touch.</span></h2>
+    <p class="ssub" style="text-align:center;margin:10px auto 0">Open to SDET, automation lead, and quality engineering roles.</p>
+  </div>
+  <div class="clinks">
+    <a class="cl" href="mailto:souradeepp3@gmail.com"><span class="cli">📧</span>souradeepp3@gmail.com</a>
+    <a class="cl" href="tel:+917980616180"><span class="cli">📱</span>+91 7980616180</a>
+    <a class="cl" href="https://linkedin.com/in/souradeeppaultech" target="_blank"><span class="cli">💼</span>LinkedIn Profile</a>
+    <a class="cl" href="#"><span class="cli">📍</span>Bengaluru, India</a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Souradeep Paul · SDET</p>
+  <p>Automation First · Quality Always</p>
+  <p>Built with precision 🔬</p>
+</footer>
+
+<div class="mover" id="mover" onclick="handleBg(event)">
+  <div class="mbox">
+    <button class="mx" onclick="closeM()">✕</button>
+    <div id="mc"></div>
+  </div>
+</div>
+
+<script>
+// Cursor
+const cur = document.getElementById('cur');
+const ring = document.getElementById('ring');
+if (cur && window.matchMedia('(pointer:fine)').matches) {
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+    setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 60);
+  });
+}
+
+// Progress bar
+const pb = document.getElementById('progressBar');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+  pb.style.width = Math.min(pct, 100) + '%';
+}, { passive: true });
+
+// Reveal
+const rvEls = document.querySelectorAll('.rv');
+if ('IntersectionObserver' in window) {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  rvEls.forEach(el => obs.observe(el));
+} else {
+  rvEls.forEach(el => el.classList.add('in'));
+}
+
+// Mobile menu
+function mmToggle() {
+  const m = document.getElementById('mmenu');
+  const b = document.getElementById('hbg');
+  const o = m.classList.toggle('open');
+  b.classList.toggle('open', o);
+  document.body.style.overflow = o ? 'hidden' : '';
+}
+function mmClose() {
+  document.getElementById('mmenu').classList.remove('open');
+  document.getElementById('hbg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Modal
+const MD = {
+  selenium: { icon:'🔬', title:'Test Automation Engineering', sub:'Selenium · Cucumber · TestNG · POM', body:`I design enterprise-grade test automation frameworks that are scalable, maintainable, and CI-ready. My approach is rooted in the Page Object Model (POM) pattern ensuring test logic stays clean.<br><br>At Telus International I reduced manual effort by <strong style="color:var(--yellow)">40%</strong>. At Wipro I cut regression cycles by <strong style="color:var(--yellow)">30%</strong> for VISA's banking systems.`, tags:['Selenium WebDriver','Cucumber BDD','TestNG','Page Object Model','Java','Data-Driven Testing'] },
+  ai: { icon:'🤖', title:'AI-Powered Automation', sub:'GenAI · Auto-Generation · Groovy', body:`I lead GenAI initiatives that automatically generate test data and Groovy-based test cases, dramatically expanding regression coverage without proportional engineering effort.<br><br>AI identifies edge cases that human testers often miss, and generated scripts stay <strong style="color:var(--yellow)">consistent in structure</strong> and naming conventions.`, tags:['GenAI Integration','Groovy Scripts','Auto Test Generation','ML-Augmented QA','Prompt Engineering'] },
+  cicd: { icon:'⚙️', title:'CI/CD Integration', sub:'Jenkins · Git · DevSecOps', body:`Quality gates belong in the pipeline. I integrate automation suites directly into Jenkins CI/CD pipelines so every commit triggers targeted validation, creating a fast feedback loop.<br><br>I've implemented pipeline configurations across healthcare (Oracle Cerner) and telecom (Telus) within <strong style="color:var(--yellow)">DevSecOps and Agile/SAFe</strong> frameworks.`, tags:['Jenkins Pipelines','Git / GitHub','DevSecOps','Agile CI Gates','SAFe','Continuous Testing'] },
+  access: { icon:'♿', title:'Accessibility Testing', sub:'WCAG 2.1 · NVDA · WAVE · ADA', body:`Digital accessibility is a legal requirement and a moral imperative. Using NVDA, WAVE, and Accessibility Insights I identify and remediate violations across Angular, React, and vanilla web apps.<br><br>I've collaborated with UI developers to bake <strong style="color:var(--yellow)">WCAG 2.1 compliance</strong> into design systems from the ground up.`, tags:['WCAG 2.1 AA/AAA','NVDA Screen Reader','WAVE Tool','ADA Compliance','ARIA','Keyboard Navigation'] },
+  api: { icon:'🔌', title:'API & Healthcare Compliance', sub:'Postman · FHIR · HL7 · REST', body:`At Oracle Cerner I automated complex healthcare workflows ensuring strict <strong style="color:var(--yellow)">FHIR and HL7 compliance</strong>. My Postman collections use environment variables, pre-request scripts, and automated assertions to validate schema integrity and data relationships.`, tags:['Postman','REST API Testing','FHIR R4','HL7 v2/v3','Schema Validation','Healthcare Compliance'] },
+  agile: { icon:'🏃', title:'Agile & QA Leadership', sub:'Agile · SAFe · Mentoring · SDLC', body:`I bring strong leadership to QA teams, mentoring engineers on automation best practices and quality ownership. Working within <strong style="color:var(--yellow)">SAFe and Agile frameworks</strong>, I align QA activities with sprint goals and PI planning.`, tags:['SAFe Framework','Agile Ceremonies','Team Mentoring','Test Strategy','SDLC / STLC','Quality Culture'] }
+};
+function openM(key) {
+  const d = MD[key];
+  document.getElementById('mc').innerHTML = `<div class="micon">${d.icon}</div><div class="mtit">${d.title}</div><div class="msub">${d.sub}</div><div class="mbod">${d.body}</div><div class="mtags">${d.tags.map(t=>'<span class="ftag">'+t+'</span>').join('')}</div>`;
+  document.getElementById('mover').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeM() { document.getElementById('mover').classList.remove('open'); document.body.style.overflow = ''; }
+function handleBg(e) { if (e.target === document.getElementById('mover')) closeM(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeM(); });
+</script>
+</body>
+</html>
